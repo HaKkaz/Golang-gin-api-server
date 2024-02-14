@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func Connect() *sql.DB {
@@ -34,7 +36,6 @@ func Connect() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
 	// Check if the table exists, if so, drop it
 	_, err = db.Exec("DROP TABLE IF EXISTS Advertisements")
@@ -63,4 +64,16 @@ func Connect() *sql.DB {
 		fmt.Println("Create table success.")
 	}
 	return db
+}
+
+func ConnectORM(db *sql.DB) *gorm.DB {
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{
+		Conn: db,
+	}), &gorm.Config{})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return gormDB
 }

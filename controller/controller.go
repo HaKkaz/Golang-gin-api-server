@@ -1,19 +1,19 @@
 package controller
 
 import (
-	"database/sql"
 	"go-gin-api-server/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type AdController struct {
-	db *sql.DB
+	gormDB *gorm.DB
 }
 
-func NewAdController(db *sql.DB) *AdController {
-	return &AdController{db: db}
+func NewAdController(gormDB *gorm.DB) *AdController {
+	return &AdController{gormDB: gormDB}
 }
 
 func (cont *AdController) CreateAd(c *gin.Context) {

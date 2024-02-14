@@ -10,5 +10,6 @@ import (
 func main() {
 	db := database.Connect()
 	defer db.Close()
-	router.SetupRouter(db)
+	gormDB := database.ConnectORM(db)
+	router.SetupRouter(gormDB)
 }
