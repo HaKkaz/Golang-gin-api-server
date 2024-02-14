@@ -1,11 +1,14 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"go-gin-api-server/database"
+	"go-gin-api-server/router"
+
+	_ "github.com/lib/pq" // Import PostgreSQL driverad
+)
 
 func main() {
-	router := gin.New()
-
-	router.GET("/ping", ping)
-	router.POST("/api/v1/ad", create_advertisement)
-	router.Run(":8080")
+	db := database.Connect()
+	defer db.Close()
+	router.SetupRouter(db)
 }

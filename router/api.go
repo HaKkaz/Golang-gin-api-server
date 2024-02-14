@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"go-gin-api-server/types"
