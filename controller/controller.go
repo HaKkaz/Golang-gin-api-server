@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -47,15 +46,4 @@ func (cont *AdController) CreateAd(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Advertisement created successfully"})
-}
-
-type StringArray []string
-
-func (a *StringArray) Scan(src interface{}) error {
-	decoder := pq.Array(&a)
-	return decoder.Scan(src)
-}
-
-func (a StringArray) Value() (interface{}, error) {
-	return pq.StringArray(a), nil
 }
