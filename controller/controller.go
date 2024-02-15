@@ -2,6 +2,7 @@ package controller
 
 import (
 	"go-gin-api-server/types"
+	"go-gin-api-server/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,8 +30,8 @@ func (cont *AdController) CreateAd(c *gin.Context) {
 
 	adObj := Advertisements{
 		Title:     ad.Title,
-		Start_At:  ad.StartAt,
-		End_At:    ad.EndAt,
+		Start_At:  utils.DateToTimestamp(ad.StartAt),
+		End_At:    utils.DateToTimestamp(ad.EndAt),
 		Age_Start: ad.Conditions.AgeStart,
 		Age_End:   ad.Conditions.AgeEnd,
 		Gender:    ad.Conditions.Gender,
