@@ -52,7 +52,9 @@ func Connect() *sql.DB {
 			title TEXT,
 			start_at TIMESTAMP,
 			end_at TIMESTAMP,
-			gender TEXT,
+			age_start INT,
+			age_end INT,
+			gender TEXT[],
 			country TEXT[],
 			platform TEXT[]
 		)

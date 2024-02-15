@@ -15,5 +15,5 @@ func (ad AdCreationRequesetBody) Print() {
 	fmt.Println("EndAt", ad.EndAt)
 	fmt.Printf("AgeStart %d\n", ad.Conditions.AgeStart)
 	fmt.Printf("AgeEnd %d\n", ad.Conditions.AgeEnd)
-	fmt.Printf("Platform %v", ad.Conditions.Country)
+	fmt.Printf("Platform %v\n", ad.Conditions.Country)
 }
