@@ -12,8 +12,8 @@ func SetupRouter(gormDB *gorm.DB) *gin.Engine {
 	router := gin.New()
 
 	adController := controller.NewAdController(gormDB)
-	router.GET("/ping", ping)
 	router.POST("/api/v1/ad", adController.CreateAd)
+	router.GET("/api/v1/ad", adController.GetAds)
 	router.Run(":8080")
 	return router
 }

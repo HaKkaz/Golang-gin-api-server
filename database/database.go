@@ -50,8 +50,8 @@ func Connect() *sql.DB {
 		CREATE TABLE IF NOT EXISTS Advertisements (
 			id SERIAL PRIMARY KEY,
 			title TEXT,
-			start_at INTEGER,
-			end_at INTEGER,
+			start_at BIGINT,
+			end_at BIGINT,
 			age_start INT,
 			age_end INT,
 			gender TEXT[],
