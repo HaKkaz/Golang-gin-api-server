@@ -12,21 +12,7 @@ import (
 
 func TestApi(t *testing.T) {
 	// Setup the test data
-	testData := []struct {
-		path     string
-		method   string
-		body     string
-		status   int
-		expected string
-	}{
-		{
-			"/api/v1/ad",
-			http.MethodPost,
-			`{"title": "General Case 1","startAt": "2023-12-10T03:00:00.000Z","endAt": "2025-12-31T16:00:00.000Z","conditions": {"ageStart": 20,"ageEnd": 30,"country": ["TW", "JP"],"platform": ["android", "ios"]}}`,
-			200,
-			`{"message":"Advertisement created successfully"}`,
-		},
-	}
+	testData := initTestCases()
 
 	// Check if the api server is up
 	_, err := http.Get("http://localhost:8080")
