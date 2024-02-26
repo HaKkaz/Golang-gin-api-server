@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: hakkaz
+      DB_PASSWORD: oliver
+      DB_NAME: ad_test
+    networks:
+      - my_network
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ad_test
+      POSTGRES_USER: hakkaz
+      POSTGRES_PASSWORD: oliver
+    ports:
+      - "5433:5432"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
