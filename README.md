@@ -23,18 +23,20 @@ go test
 ### 分析效能瓶頸
 首先，在一般情境下『查詢廣告的次數』**會遠大於**『投放廣告的次數』，因此在實作上可以專注於提升查詢效能。
 
-爲了提升查詢的效能，可以考慮將『活躍廣告』存在記憶體中，以提升效能，也不用擔心會佔用過多記憶體，因為總活躍廣告數量不會超過 1000 個。
+此次需求是 10,000 Requests Per Second 的 API，如果每次都要查詢 Database 一定會太慢，因此決定從這裡著手優化，爲了提升查詢的效能，可以考慮將『活躍廣告』存在記憶體中，以提升效能，也不用擔心會佔用過多記憶體，因為總活躍廣告數量不會超過 1000 個。
+
+此專案選用 PostgreSQL 作為主要資料庫， Redis 作為 Cache，至於不直接存在記憶體是考量若後續有考量負載平衡的設計，還是需要有 Redis 才能共享 Cache 內的資源。
+
+### 系統設計
+儲存資料的部分主要分為 Database 以及 Cache 兩個部分，其中 DB 會儲存所有歷史廣告訊息，而 Cache 則是儲存 Active 的廣告。
+
+- 每次 `create ad` 都會先將廣告放入資料庫，接著會重新尋找一次資料庫中 active 的廣告放入 Redis 中。
+- 每次的查詢會從 Redis 中找到符合條件的廣告。
+
+效率上，這樣的設計有效的避免了大量對資料庫的讀取，而每日寫入資料庫的動作又不會超過 3000 次，確保了服務的高效能；同時，優先放入資料庫也確保了廣告資料不為輕易遺失，畢竟每一筆客戶的資料都極為重要。
 
 ### 選擇使用工具
-- GIN
-    - Go 最常見的 web service 框架
-- Gorm
-    - Go 最常見的 ORM 框架
-- PostgreSQL
-    - 使用 RDBMS 方便進行 index 提升查詢效能
-    - 選用 PostgreSQL 是因為支援 GIN index
-- Vegeta
-    - 教學淺顯易懂易學習，方便使用
+- GIN, Gorm, PostgreSQL, Redis, Vegeta
 
 ### Database Schema 設計
 - 使用 `text` 儲存 `Title`，因為考量標題長度可能很長，且不需要對 Title 建立 index。
@@ -43,3 +45,39 @@ go test
 - 使用 `INT` 儲存 `AgeStart`、`AgeEnd`，以建立 index 加速查詢。
 
 ![alt text](images/schema.png)
+
+
+### Structure
+```
+.
+├── Dockerfile
+├── README.md
+├── controller
+│   ├── Advertisements.go
+│   ├── adFilter.go
+│   ├── adResponse.go
+│   └── controller.go
+├── database
+│   └── database.go
+├── docker-compose.yml
+├── go.mod
+├── go.sum
+├── images
+│   └── schema.png
+├── main.go
+├── report.txt
+├── router
+│   └── router.go
+├── test.txt
+├── testing
+│   ├── cases.go
+│   ├── create_data.sh
+│   ├── create_large_data.sh
+│   ├── main_test.go
+│   ├── test.sh
+│   └── testcase.go
+├── types
+│   └── adCreationReqeustBody.go
+└── utils
+    └── type.go
+```
