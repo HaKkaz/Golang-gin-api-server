@@ -1,4 +1,4 @@
-package database
+package storage
 
 import (
 	"database/sql"
@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Connect() *sql.DB {
+func ConnectDatabase() *sql.DB {
 	// Load env file and get the environment variables
 	err := godotenv.Load()
 	if err != nil {
