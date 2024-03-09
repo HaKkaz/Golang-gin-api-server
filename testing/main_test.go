@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -14,11 +15,20 @@ func TestApi(t *testing.T) {
 	// Setup the test data
 	testData := initTestCases()
 
-	// Check if the api server is up
-	_, err := http.Get("http://localhost:8080")
-	if err != nil {
-		t.Logf("Server not up yet... try again")
-		os.Exit(0)
+	// loop 5 times to wait for the server to start
+	for i := 0; i < 3; i++ {
+		// Check if the api server is up
+		_, err := http.Get("http://localhost:8080")
+		if err != nil {
+			if i == 4 {
+				t.Logf("Connection to server failed... exiting test...")
+				os.Exit(0)
+			} else {
+				t.Logf("Server not up yet... try again")
+				time.Sleep(3 * time.Second)
+			}
+		}
+
 	}
 
 	for _, tc := range testData {
