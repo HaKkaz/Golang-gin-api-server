@@ -13,11 +13,20 @@ git clone 這個 repo，在 root directory 執行以下命令：
 sudo docker compose up -d
 ```
 
-### Run Testing
+## Testing
 進入 `testing` 資料夾，執行以下命令進行整合測試：
 ```
 go test
 ```
+
+對 API 的運作以及回傳結果進行測試，包括創建的廣告各項參數是否會成功使用 struct binding 驗證正確性，以及檢驗依照指定順序創建廣告，是否有符合預期的回傳結果。
+
+Testcase 包含了特殊情況：
+- 創建國家代碼不符合 `iso_3166-1` 規範的廣告
+- 創建年齡範圍錯誤的廣告
+- 創建 `Title` 為空的廣告
+- 創建沒有 `StartAt`, `EndAt` 的廣告
+- 創建不符合預期平台的廣告
 
 ## 設計想法
 ### 分析效能瓶頸
