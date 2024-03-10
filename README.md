@@ -28,6 +28,8 @@ go test
 此專案選用 PostgreSQL 作為主要資料庫， Redis 作為 Cache，至於不直接存在記憶體是考量若後續有考量負載平衡的設計，還是需要有 Redis 才能共享 Cache 內的資源。
 
 ### 系統設計
+![system](images/system.png)
+
 儲存資料的部分主要分為 Database 以及 Cache 兩個部分，其中 DB 會儲存所有歷史廣告訊息，而 Cache 則是儲存 Active 的廣告。
 
 - 每次 `create ad` 都會先將廣告放入資料庫，接著會重新尋找一次資料庫中 active 的廣告放入 Redis 中。
@@ -40,44 +42,51 @@ go test
 
 ### Database Schema 設計
 - 使用 `text` 儲存 `Title`，因為考量標題長度可能很長，且不需要對 Title 建立 index。
-- 使用 `varchar` 儲存 `Gender`、`Country`、`Platform`，並建立 index，加速查詢。
+- 使用 `varchar` 陣列儲存 `Gender`、`Country`、`Platform`。
 - 使用 `BIGINT` 儲存 `StartAt`、`EndAt`，考量用字串儲存需要花費更多的空間，且運算上並不會比較方便快速。
-- 使用 `INT` 儲存 `AgeStart`、`AgeEnd`，以建立 index 加速查詢。
+- 使用 `INT` 儲存 `AgeStart`、`AgeEnd`。
 
-![alt text](images/schema.png)
+## 壓力測試
+測試環境：
+- Hardware: GCP e2-micro 
+- OS: Ubuntu 22.04
+- Testing Tool: [vegeta](https://github.com/tsenart/vegeta)
 
+測試結果是 5000 requests per second，相信硬體如果再好一點，可以有機會達到 10000 requests per second。
+![alt text](images/testing_5000rps.png)
 
-### Structure
+## Structure
 ```
 .
 ├── Dockerfile
 ├── README.md
+├── advertisements.session.sql
 ├── controller
 │   ├── Advertisements.go
 │   ├── adFilter.go
 │   ├── adResponse.go
-│   └── controller.go
-├── database
-│   └── database.go
+│   └── controller.go # request handler
 ├── docker-compose.yml
 ├── go.mod
 ├── go.sum
 ├── images
-│   └── schema.png
 ├── main.go
-├── report.txt
 ├── router
 │   └── router.go
+├── storage
+│   ├── cache.go # Redis Setting
+│   └── database.go # PostgreSQL and ORM setting
 ├── test.txt
 ├── testing
 │   ├── cases.go
 │   ├── create_data.sh
 │   ├── create_large_data.sh
 │   ├── main_test.go
-│   ├── test.sh
 │   └── testcase.go
 ├── types
 │   └── adCreationReqeustBody.go
 └── utils
     └── type.go
+
+7 directories, 23 files
 ```
