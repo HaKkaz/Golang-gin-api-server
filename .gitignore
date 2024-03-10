@@ -1,7 +1,8 @@
 .DS_STORE
 node_modules
 build/
-**/.log
+**/*.log
+**/*.sql
 **/*.txt
 .vscode
 *.swp

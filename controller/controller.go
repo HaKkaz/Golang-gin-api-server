@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go-gin-api-server/types"
 	"go-gin-api-server/utils"
 	"net/http"
@@ -39,8 +38,7 @@ func (cont *AdController) CreateAd(c *gin.Context) {
 	}
 
 	// Handle other validation checks and business logic here
-	ad.Print()
-
+	// ad.Print()
 	adObj := Advertisements{
 		Title:    ad.Title,
 		StartAt:  utils.DateToTimestamp(ad.StartAt),
@@ -59,29 +57,28 @@ func (cont *AdController) CreateAd(c *gin.Context) {
 		return
 	}
 
-	cont.GetActiveAds()
+	// Get active ads from PostgreSQL and set it to Redis Cache
+	cont.GetActiveAdsForCache()
 
 	c.JSON(http.StatusOK, gin.H{"message": "Advertisement created successfully"})
 }
 
 // Get active ads from PostgreSQL
-func (cont *AdController) GetActiveAds() error {
+func (cont *AdController) GetActiveAdsForCache() error {
 	curTimestamp := time.Now().Unix() // Get current int64 timestamp
 
 	query := cont.gormDB.Model(&Advertisements{})
 	query = query.Where("? BETWEEN start_at AND end_at", curTimestamp)
 
 	ads := []Advertisements{}
-	query.Select("*").Order("end_at ASC").Find(&ads)
+	query.Select("*").Order("end_at ASC").Find(&ads) // select all ads and order by end_at in ascending order
+
+	// fmt.Println("ads size: ", len(ads))
 
 	adJSON, err := json.Marshal(ads)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(string(adJSON))
-	fmt.Println("Get active ads successfully")
-	// TODO: Send ads to Redis Cache
 
 	// Set ads to Redis Cache
 	errr := cont.redisCache.Set("ads", adJSON, 24*time.Hour).Err()
@@ -89,20 +86,16 @@ func (cont *AdController) GetActiveAds() error {
 		return errr
 	}
 
-	// val, err := cont.redisCache.Get("ads").Result()
-	// if err == redis.Nil {
-	// 	fmt.Println("Key 'ads' does not exist")
-	// } else if err != nil {
-	// 	fmt.Println("Error:", err)
-	// } else {
-	// 	fmt.Println("Value of 'ads' key:\n", val)
-	// }
-
 	return nil
 }
 
 // Get ads from Redis Cache
 func (cont *AdController) GetAds(c *gin.Context) {
+	filter := NewAdFilter()
+	if err := c.Bind(&filter); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
 	filteredAds := []Advertisements{}
 
 	iter := cont.redisCache.Scan(0, "ads", 0).Iterator()
@@ -121,21 +114,48 @@ func (cont *AdController) GetAds(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		// iterate through the list
-		for _, ad := range filteredAds {
-			fmt.Println("ad.Title = ", ad.Title)
-			fmt.Println("ad.StartAt = ", ad.StartAt)
-			fmt.Println("ad.EndAt = ", ad.EndAt)
-		}
 	}
+
+	// fmt.Println("size of filteredAds: ", len(filteredAds))
 
 	// Convert Advertisements to AdToadResult
 	ads := []ad{}
-	for _, filterdAd := range filteredAds {
+
+	offset := filter.Offset
+	limit := filter.Limit
+
+	var skipped int32 = 0
+
+	for _, filteredAd := range filteredAds {
+		if filter.Age != nil && (filteredAd.AgeStart > *filter.Age || filteredAd.AgeEnd < *filter.Age) {
+			continue
+		}
+
+		if filter.Country != nil && !isInCountry(*filter.Country, filteredAd.Country) {
+			continue
+		}
+
+		if filter.Gender != nil && !isInGender(*filter.Gender, filteredAd.Gender) {
+			continue
+		}
+
+		if filter.Platform != nil && !isInPlatform(*filter.Platform, filteredAd.Platform) {
+			continue
+		}
+
+		if skipped < offset {
+			skipped++
+			continue
+		}
+
 		ads = append(ads, ad{
-			Title:  filterdAd.Title,
-			End_At: filterdAd.EndAt,
+			Title:  filteredAd.Title,
+			End_At: filteredAd.EndAt,
 		})
+
+		if len(ads) == int(limit) {
+			break
+		}
 	}
 
 	response := adResponse{Ads: AdToadResult(ads)}

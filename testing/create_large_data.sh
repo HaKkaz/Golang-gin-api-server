@@ -1,6 +1,7 @@
 #!/bin/bash
 
 for T in {0..1000}; do
+    echo "$T"
     # Generate random title
     title=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
 
@@ -48,5 +49,5 @@ EOF
     --data "$json_data"
 
     echo ""
-    echo "$json_data"
+    # echo "$json_data"
 done

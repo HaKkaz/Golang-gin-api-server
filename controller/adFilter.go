@@ -1,6 +1,10 @@
 package controller
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/lib/pq"
+)
 
 type AdFilter struct {
 	Offset   int32   `form:"offset"`
@@ -13,7 +17,8 @@ type AdFilter struct {
 
 func NewAdFilter() *AdFilter {
 	return &AdFilter{
-		Limit: 5,
+		Offset: 0,
+		Limit:  5,
 	}
 }
 
@@ -34,4 +39,31 @@ func (filter AdFilter) check() {
 		fmt.Printf("Platform = %v\n", filter.Platform)
 	}
 	fmt.Println("-------------------")
+}
+
+func isInCountry(s string, countries pq.StringArray) bool {
+	for _, country := range countries {
+		if s == country {
+			return true
+		}
+	}
+	return false
+}
+
+func isInGender(s string, genders pq.StringArray) bool {
+	for _, gender := range genders {
+		if s == gender {
+			return true
+		}
+	}
+	return false
+}
+
+func isInPlatform(s string, platforms pq.StringArray) bool {
+	for _, platform := range platforms {
+		if s == platform {
+			return true
+		}
+	}
+	return false
 }
