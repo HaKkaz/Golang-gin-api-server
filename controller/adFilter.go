@@ -42,6 +42,9 @@ func (filter AdFilter) check() {
 }
 
 func isInCountry(s string, countries pq.StringArray) bool {
+	if len(countries) == 0 {
+		return true
+	}
 	for _, country := range countries {
 		if s == country {
 			return true
@@ -51,6 +54,9 @@ func isInCountry(s string, countries pq.StringArray) bool {
 }
 
 func isInGender(s string, genders pq.StringArray) bool {
+	if len(genders) == 0 {
+		return true
+	}
 	for _, gender := range genders {
 		if s == gender {
 			return true
@@ -60,6 +66,9 @@ func isInGender(s string, genders pq.StringArray) bool {
 }
 
 func isInPlatform(s string, platforms pq.StringArray) bool {
+	if len(platforms) == 0 {
+		return true
+	}
 	for _, platform := range platforms {
 		if s == platform {
 			return true
