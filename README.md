@@ -60,7 +60,6 @@ go test
 .
 ├── Dockerfile
 ├── README.md
-├── advertisements.session.sql
 ├── controller
 │   ├── Advertisements.go
 │   ├── adFilter.go
@@ -76,7 +75,6 @@ go test
 ├── storage
 │   ├── cache.go # Redis Setting
 │   └── database.go # PostgreSQL and ORM setting
-├── test.txt
 ├── testing
 │   ├── cases.go
 │   ├── create_data.sh
