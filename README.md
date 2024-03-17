@@ -14,9 +14,18 @@ sudo docker compose up -d
 ```
 
 ## Testing
-進入 `testing` 資料夾，執行以下命令進行整合測試：
+測試分為兩個部分，對一些基本的函數，如：資料處理、資料確認函數，進行 `unit test` ，對 API 進行 `integration test`，確認回傳結果正確。
+
+### 單元測試 (Unit Test)
+進入 `/controller` 資料夾，有針對 controller package 內的各個基本函數進行 unit test。
 ```
-go test
+go test -v
+```
+
+### 整合測試 (Integration Test)
+進入 `/testing` 資料夾，執行以下命令進行整合測試：
+```
+go test -v
 ```
 
 對 API 的運作以及回傳結果進行測試，包括創建的廣告各項參數是否會成功使用 struct binding 驗證正確性，以及檢驗依照指定順序創建廣告，是否有符合預期的回傳結果。
