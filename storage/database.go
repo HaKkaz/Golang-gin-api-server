@@ -67,25 +67,6 @@ func ConnectDatabase() *sql.DB {
 		fmt.Println("Create table success.")
 	}
 
-	// Create indexes
-	_, err = db.Exec("CREATE INDEX idx_gender ON Advertisements USING GIN (gender)")
-	if err != nil {
-		fmt.Println("Error: create gender index error.")
-		fmt.Println(err)
-	}
-
-	_, err = db.Exec("CREATE INDEX idx_country ON Advertisements USING GIN (country)")
-	if err != nil {
-		fmt.Println("Error: create country index error.")
-		fmt.Println(err)
-	}
-
-	_, err = db.Exec("CREATE INDEX idx_platform ON Advertisements USING GIN (platform)")
-	if err != nil {
-		fmt.Println("Error: create platform index error.")
-		fmt.Println(err)
-	}
-
 	return db
 }
 
