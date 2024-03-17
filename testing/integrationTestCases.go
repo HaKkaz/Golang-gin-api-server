@@ -4,7 +4,8 @@ import (
 	"net/http"
 )
 
-func initTestCases() []testcase {
+// Integration test cases
+func initIntegrationTestCases() []testcase {
 	postWrongCountryCase := testcase{
 		"/api/v1/ad",
 		http.MethodPost,

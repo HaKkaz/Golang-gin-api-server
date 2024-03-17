@@ -13,7 +13,7 @@ import (
 
 func TestApi(t *testing.T) {
 	// Setup the test data
-	testData := initTestCases()
+	integrationTestData := initIntegrationTestCases()
 
 	// loop 5 times to wait for the server to start
 	for i := 0; i < 3; i++ {
@@ -31,7 +31,7 @@ func TestApi(t *testing.T) {
 
 	}
 
-	for _, tc := range testData {
+	for _, tc := range integrationTestData {
 		bodyVal := tc.body
 		if bodyVal == "" {
 			bodyVal = "nil"
