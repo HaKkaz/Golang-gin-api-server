@@ -12,10 +12,6 @@ type adResult struct {
 	End_At string `json:"endAt"`
 }
 
-type adResponse struct {
-	Ads []adResult `json:"items"`
-}
-
 // Convert ad to adResult, adResult is the spcefic format for response
 func AdToadResult(ads []ad) []adResult {
 	var results []adResult

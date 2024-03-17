@@ -73,8 +73,6 @@ func (cont *AdController) GetActiveAdsForCache() error {
 	ads := []Advertisements{}
 	query.Select("*").Order("end_at ASC").Find(&ads) // select all ads and order by end_at in ascending order
 
-	// fmt.Println("ads size: ", len(ads))
-
 	adJSON, err := json.Marshal(ads)
 	if err != nil {
 		return err
@@ -116,8 +114,6 @@ func (cont *AdController) GetAds(c *gin.Context) {
 		}
 	}
 
-	// fmt.Println("size of filteredAds: ", len(filteredAds))
-
 	// Convert Advertisements to AdToadResult
 	ads := []ad{}
 
@@ -156,6 +152,10 @@ func (cont *AdController) GetAds(c *gin.Context) {
 		if len(ads) == int(limit) {
 			break
 		}
+	}
+
+	type adResponse struct {
+		Ads []adResult `json:"items"`
 	}
 
 	response := adResponse{Ads: AdToadResult(ads)}

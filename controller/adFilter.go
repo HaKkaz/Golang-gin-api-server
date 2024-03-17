@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/lib/pq"
 )
 
@@ -20,25 +18,6 @@ func NewAdFilter() *AdFilter {
 		Offset: 0,
 		Limit:  5,
 	}
-}
-
-func (filter AdFilter) check() {
-	fmt.Println("-------------------")
-	fmt.Printf("Offset = %d\n", filter.Offset)
-	fmt.Printf("Limit = %d\n", filter.Limit)
-	if filter.Age != nil {
-		fmt.Printf("Age = %v\n", *filter.Age)
-	}
-	if filter.Gender != nil {
-		fmt.Printf("Gender = %v\n", *filter.Gender)
-	}
-	if filter.Country != nil {
-		fmt.Printf("Country = %v\n", *filter.Country)
-	}
-	if filter.Platform != nil {
-		fmt.Printf("Platform = %v\n", filter.Platform)
-	}
-	fmt.Println("-------------------")
 }
 
 func isInCountry(s string, countries pq.StringArray) bool {
